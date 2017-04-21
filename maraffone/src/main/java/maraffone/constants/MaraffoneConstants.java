@@ -1,6 +1,6 @@
-package maraffone;
+package maraffone.constants;
 
-public class MarafoneConstants
+public interface MaraffoneConstants
 {
 
 	public static final int PLAYER_HAND = 10;
@@ -9,5 +9,7 @@ public class MarafoneConstants
 	public static final int PLAYER_NUMBER = 4;
 
 	public static final int LAST_TURN = 9;
-	public static final int MATCHES_LEARNING_TRIALS = 80000;
+
+	double LAST_POINT_LOST = 0d;
+	double LAST_POINT_GAINED = 1d;
 }
