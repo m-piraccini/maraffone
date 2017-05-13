@@ -60,7 +60,7 @@ public class HighestCardPlayer extends AbstractPlayer {
       }
 
 
-      LOG.info(getName() + ": Briscola Is " + selectedSuit);
+      logBriscola(selectedSuit);
       return selectedSuit;
    }
 

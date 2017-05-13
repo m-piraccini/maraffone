@@ -1,12 +1,9 @@
 package maraffone.player;
 
-import com.google.common.collect.Table;
 import maraffone.card.Card;
 import maraffone.card.Card.Suit;
 import maraffone.card.CardOnTable;
-import maraffone.constants.MaraffoneConstants;
 import maraffone.knowledge.AnnForPlayers;
-import maraffone.knowledge.QForPlayers;
 import maraffone.table.Match;
 import maraffone.table.Turn;
 import org.apache.log4j.Logger;
@@ -16,7 +13,6 @@ import org.nd4j.linalg.api.rng.Random;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -79,12 +75,12 @@ public class AnnPlayer extends AbstractPlayer {
       // find action returning max reward
       for (PlayerCard card: actionsFromState)
       {
-         Double reward = Q.get(currentState,card);
-         if (reward != null && reward > maxResult){
-            LOG.error("Q USED");
-            maxResult=reward.doubleValue();
-            actionWithMaxResult = card;
-         }
+//         Double reward = Q.get(currentState,card);
+//         if (reward != null && reward > maxResult){
+//            LOG.error("Q USED");
+//            maxResult=reward.doubleValue();
+//            actionWithMaxResult = card;
+//         }
       }
 
       // return random card if cannot find action in table
@@ -120,10 +116,6 @@ public class AnnPlayer extends AbstractPlayer {
 
    }
 
-
-   private double maxQ(String s) {
-
-   }
 
 
 }

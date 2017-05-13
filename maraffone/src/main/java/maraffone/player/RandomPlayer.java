@@ -42,7 +42,7 @@ public class RandomPlayer extends AbstractPlayer {
          if (randomSuitNumber == Card.getSuitOrderingMap().get(suit))
             selectedSuit = suit;
       }
-      LOG.info(getName() + ": Briscola Is " + selectedSuit);
+      logBriscola(selectedSuit);
       return selectedSuit;
    }
 

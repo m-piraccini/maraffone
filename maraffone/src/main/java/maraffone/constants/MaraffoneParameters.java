@@ -17,9 +17,9 @@ public class MaraffoneParameters {
    public static final boolean enableLogLevel = true;
 
 
-   public static final int MATCHES_LEARNING_TRIALS = 50000;
+   public static final int MATCHES_LEARNING_TRIALS = 600000;
 
-   public static final int MATCHING_SAMPLING = 1000;
+   public static final int MATCHING_SAMPLING = 10000;
 
 
 
@@ -32,7 +32,7 @@ public class MaraffoneParameters {
          if (p % 2 == 0)
             player = new RandomPlayer();
          else
-            player = new RandomPlayer();
+            player = new QPlayer();
 
          player.setName("P" + p);
          players.add(player);

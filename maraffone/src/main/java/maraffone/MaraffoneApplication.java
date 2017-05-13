@@ -41,7 +41,7 @@ public class MaraffoneApplication {
       end = System.currentTimeMillis();
 
 
-      // matches to play?
+      // matches (epochs) to play?
       for (int match_number = 0; match_number < MaraffoneParameters.MATCHES_LEARNING_TRIALS; match_number++) {
          sampling(match_number);
 

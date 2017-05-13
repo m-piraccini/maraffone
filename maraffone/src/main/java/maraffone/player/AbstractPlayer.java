@@ -2,6 +2,7 @@ package maraffone.player;
 
 import maraffone.card.Card;
 import maraffone.card.CardComparator;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +18,7 @@ import java.util.stream.Collectors;
  */
 public abstract class AbstractPlayer implements Player {
 
+   private final static Logger LOG = Logger.getLogger(AbstractPlayer.class);
 
    protected String name;
    protected List<PlayerCard> playerHand = new ArrayList<PlayerCard>();
@@ -53,6 +55,10 @@ public abstract class AbstractPlayer implements Player {
       return currentCards;
    }
 
+
+   protected void logBriscola(Card.Suit selectedSuit) {
+//      LOG.info(getName() + ": Briscola Is " + selectedSuit);
+   }
 
 
 

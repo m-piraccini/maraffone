@@ -47,9 +47,12 @@ public class QPlayer extends AbstractPlayer {
          if (randomSuitNumber == Card.getSuitOrderingMap().get(suit))
             selectedSuit = suit;
       }
-      LOG.info(getName() + ": Briscola Is " + selectedSuit);
+
+      logBriscola(selectedSuit);
       return selectedSuit;
    }
+
+   
 
 
    @Override
@@ -74,7 +77,7 @@ public class QPlayer extends AbstractPlayer {
    private PlayerCard selectCardToPlay(ArrayList<CardOnTable> table, List<PlayerCard> hand) {
       ArrayList<PlayerCard> actionsFromState = actionsFromState(table, hand);
 
-      double maxResult = 0d;
+      double maxResult = -(Double.MAX_VALUE-10);
       PlayerCard actionWithMaxResult = null;
 
       // find action returning max reward
@@ -82,7 +85,7 @@ public class QPlayer extends AbstractPlayer {
       {
          Double reward = Q.get(currentState,card);
          if (reward != null && reward > maxResult){
-            LOG.error("Q USED");
+            LOG.info("Q USED");
             maxResult=reward.doubleValue();
             actionWithMaxResult = card;
          }
