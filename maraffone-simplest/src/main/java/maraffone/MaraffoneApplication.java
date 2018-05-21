@@ -5,9 +5,8 @@ import maraffone.card.Card;
 import maraffone.card.CardOnTable;
 import maraffone.constants.MaraffoneConstants;
 import maraffone.constants.MaraffoneParameters;
+import maraffone.knowledge.DqnForPlayers;
 import maraffone.player.Player;
-import maraffone.player.QPlayer;
-import maraffone.player.RandomPlayer;
 import maraffone.knowledge.QForPlayers;
 import maraffone.table.Match;
 import maraffone.table.Turn;
@@ -15,7 +14,9 @@ import maraffone.utils.MaraffoneUtils;
 import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -25,7 +26,7 @@ public class MaraffoneApplication {
 
    private ArrayList<Card> newDeck;
    private List<Player> players;
-   private ArrayList<CardOnTable> table;
+   private Map<String, CardOnTable> table;
    private Match match;
    private Player firstMatchPlayer = null;
 
@@ -55,7 +56,7 @@ public class MaraffoneApplication {
 
          // there are 10 turns in a match
          for (int t = 0; t < MaraffoneConstants.TURNS_NUMBER; t++) {
-            table = new ArrayList<>(MaraffoneConstants.PLAYER_NUMBER);
+            table = new HashMap<>(MaraffoneConstants.PLAYER_NUMBER);
             Turn turn = new Turn();
             turn.setTurnNumber(t);
             turn.setFirstPlayer(firstPlayer);
@@ -64,16 +65,20 @@ public class MaraffoneApplication {
             // there are 4 throws in a turn
             for (int trow = 0; trow < MaraffoneConstants.THROWS_NUMBER; trow++) {
                CardOnTable trowedCard = new CardOnTable();
-               trowedCard.setCard(currentPlayer.trowCard(match, table, t, trow));
+               trowedCard.setCard(currentPlayer.playCard(match, table, t, trow));
+
+
                trowedCard.setPlayer(currentPlayer);
-               table.add(trowedCard);
+               trowedCard.setPositionInTurn(trow);
+               table.put(currentPlayer.getName(), trowedCard);
+
                currentPlayer = currentPlayer.getNextPlayer();
             }
             turn.setPlayedCards(table);
             match.getTurns().add(turn);
             firstPlayer = MaraffoneUtils.defineTurnWinner(turn, match.getBriscola());
-            firstPlayer.getWinnedCardsStack().addAll(
-                  turn.getPlayedCards().stream().map(pc -> pc.getCard()).collect(Collectors.toCollection(ArrayList::new)));
+            firstPlayer.getWinnedCardsStack().addAll(turn.getPlayedCards().values().stream().map(pc -> pc.getCard())
+                  .collect(Collectors.toCollection(ArrayList::new)));
 
 
             // calc reward: updates Q
@@ -85,20 +90,30 @@ public class MaraffoneApplication {
             firstPlayer.getNextPlayer().getMate().updateTurnReward(-calculateTurnReward, turn);
 
          }
+         DqnForPlayers.getInstance().trainDqn();
 
-         players.get(0).setCumulatedPointsInMatches(players.get(0).getCumulatedPointsInMatches() + MaraffoneUtils.countPoints(players.get(0), match));
-         players.get(1).setCumulatedPointsInMatches(players.get(1).getCumulatedPointsInMatches() + MaraffoneUtils.countPoints(players.get(1), match));
+         players.get(0).setCumulatedPointsInMatches(
+               players.get(0).getCumulatedPointsInMatches() + MaraffoneUtils.countPoints(players.get(0), match));
+         players.get(1).setCumulatedPointsInMatches(
+               players.get(1).getCumulatedPointsInMatches() + MaraffoneUtils.countPoints(players.get(1), match));
 
-//         MaraffoneUtils.printMatch(match);
+         //         MaraffoneUtils.printMatch(match);
       }
+
+      DqnForPlayers.getInstance().stopSimulation();
 
       LOG.info("simulation running: " + (end - start) / 1000);
       LOG.info("match ended!");
-      LOG.info("Cumulated points p0: " + players.get(0).getCumulatedPointsInMatches());
-      LOG.info("Cumulated points p1: " + players.get(1).getCumulatedPointsInMatches());
 
-      QForPlayers.getInstance().printLearning();
+      double p0points = players.get(0).getCumulatedPointsInMatches();
+      double p1points = players.get(1).getCumulatedPointsInMatches();
+      LOG.info("Cumulated points p0: " + p0points);
+      LOG.info("Cumulated points p1: " + p1points);
+      LOG.info("points difference: " + Math.abs(p1points - p0points));
+      LOG.info("points ratio: " + (p1points < p0points ? p1points / p0points : p0points / p1points));
 
+
+      DqnForPlayers.getInstance().printLearning();
    }
 
 
@@ -150,7 +165,6 @@ public class MaraffoneApplication {
          players.get(p).setMate(players.get((p + 2) % MaraffoneConstants.PLAYER_NUMBER));
       }
    }
-
 
 
    private void prepareForNewMatch() {
